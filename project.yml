@@ -6,7 +6,7 @@
 # This sample, therefore, only demonstrates running a collection of unit tests.
 
 :project:
-  :use_exceptions: TRUE
+  :use_exceptions: FALSE
   :use_test_preprocessor: TRUE
   :use_auxiliary_dependencies: TRUE
   :build_root: build
@@ -14,7 +14,7 @@
   :test_file_prefix: test_
 
 :release_build:
-  :output: MyApp.hex
+  :output: MyApp.elf
   :use_assembly: FALSE
 
 :environment:
@@ -27,6 +27,7 @@
     - +:test/**
     - -:test/support
   :source:
+    - include/**
     - src/**
   :support:
     - test/support
@@ -58,8 +59,24 @@
     bool:     UINT8
 
 :tools:
-  :release_compiler: msp430-gcc
-  :release_linker: msp430-gcc
+  :release_compiler:
+    :name: mspgcc
+    :executable: msp430-gcc
+    :arguments:
+      - -Os
+      - -Wall
+      - -g
+      - -mmcu=msp430g2231
+      - -c ${1}
+      - -o ${2}
+      - -I./include # TODO: make this not suck
+  :release_linker:
+    :name: mspgcc
+    :executable: msp430-gcc
+    :arguments:
+      - ${1}
+      - -mmcu=msp430g2231
+      - -o ${2}
 
 :plugins:
   :load_paths:
