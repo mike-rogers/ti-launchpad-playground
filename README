@@ -33,6 +33,14 @@ The tool I'm getting the most use out of is [Ceedling](http://throwtheswitch.org
 
 [Ceedling](https://github.com/ThrowTheSwitch/Ceedling) ties all of these frameworks together in a neat, beautiful package.
 
+Additionally the comments are done in the style of [Doxygen](http://www.stack.nl/~dimitri/doxygen/), so if you have it installed you can invoke it with:
+
+```
+doxygen doxygen.config
+```
+
+The output will be in `docs/doxygen`.
+
 ## What do I need to start?
 
 You will need:
