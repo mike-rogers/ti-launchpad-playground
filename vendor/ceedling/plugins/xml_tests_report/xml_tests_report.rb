@@ -96,7 +96,7 @@ class XmlTestsReport < Plugin
   def write_statistics( counts, stream )
     stream.puts "\t<Statistics>"
     stream.puts "\t\t<Tests>#{counts[:total]}</Tests>"
-    stream.puts "\t\t<Ignores>#{counts[:ignored]}</Ignores>"
+    # stream.puts "\t\t<Ignores>#{counts[:ignored]}</Ignores>"
     stream.puts "\t\t<FailuresTotal>#{counts[:failed]}</FailuresTotal>"
     stream.puts "\t\t<Errors>0</Errors>"
     stream.puts "\t\t<Failures>#{counts[:failed]}</Failures>"
