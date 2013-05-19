@@ -45,8 +45,6 @@ void test_event_should_register_callback(void)
   uint32_t numberOfInterrupts = 5;
   event_cb_t callbackFunction = 0;
 
-  TEST_IGNORE();
-
   // Preparation:
   timer_create_IgnoreAndReturn(TDD_STATUS_SUCCESS);
   event_create(&params);
