@@ -37,6 +37,7 @@ import xml.dom.minidom
 
 __version__ = "2.0.prerelease"
 gcov_cmd = "gcov"
+object_dir = ''
 
 output_re = re.compile("creating '(.*)'$")
 source_re = re.compile("cannot open source file")
@@ -309,7 +310,7 @@ def process_datafile(filename, covdata, options):
     (dirname,base) = os.path.split(filename)
     (name,ext) = os.path.splitext(base)
     prevdir = os.getcwd()
-    objdir = ''
+    objdir = object_dir
     (head, tail) = os.path.split(name)
     errors=[]
 
@@ -586,6 +587,11 @@ parser.add_option("-p","--sort-percentage",
         action="store_true",
         dest="sort_percent",
         default=None)
+parser.add_option("-j","--object-dir",
+        help="Point object file search to a specific directory.",
+        action="store",
+        dest="object_dir",
+        default=None)
 parser.usage="gcovr [options]"
 parser.description="A utility to run gcov and generate a simple report that summarizes the coverage"
 #
@@ -599,6 +605,8 @@ if options.version:
     print "DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government "
     print "retains certain rights in this software."
     sys.exit(0)
+if options.object_dir:
+    object_dir = options.object_dir
 #
 # Setup filter
 #
