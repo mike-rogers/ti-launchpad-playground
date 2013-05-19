@@ -35,7 +35,7 @@ class XmlTestsReport < Plugin
     write_header( stream )
     write_failures( results[:failures], stream )
     write_tests( results[:successes], stream, 'SuccessfulTests' )
-    write_tests( results[:ignores], stream, 'IgnoredTests' )
+    # write_tests( results[:ignores], stream, 'IgnoredTests' )
     write_statistics( results[:counts], stream )
     write_footer( stream )
   end
