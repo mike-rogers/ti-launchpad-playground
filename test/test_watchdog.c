@@ -26,7 +26,7 @@ void test_watchdog_should_create_successfully(void)
   tdd_status_t status;
 
   // Code under test:
-  status = watchdog_create_and_disable(&watchdogRegister);
+  status = watchdog_createAndDisable(&watchdogRegister);
 
   // Assertions:
   TEST_ASSERT_EQUAL(TDD_STATUS_SUCCESS, status);

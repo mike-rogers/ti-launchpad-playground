@@ -14,7 +14,7 @@
 */
 #define WATCHDOG_DISABLE 0x80
 
-tdd_status_t watchdog_create_and_disable(uint16_t *reg)
+tdd_status_t watchdog_createAndDisable(uint16_t *reg)
 {
   *reg = WATCHDOG_APPLY(WATCHDOG_DISABLE);
 

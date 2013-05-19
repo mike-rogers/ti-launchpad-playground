@@ -17,6 +17,6 @@
  * @param[in] reg The address of the watchdog timer control register.
  * @returns A status indicating success or type of failure.
  */
-tdd_status_t watchdog_create_and_disable(uint16_t *reg);
+tdd_status_t watchdog_createAndDisable(uint16_t *reg);
 
 #endif // watchdog_H
