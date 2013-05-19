@@ -35,11 +35,9 @@ The tool I'm getting the most use out of is [Ceedling](http://throwtheswitch.org
 
 Additionally the comments are done in the style of [Doxygen](http://www.stack.nl/~dimitri/doxygen/), so if you have it installed you can invoke it with:
 
-```
-doxygen doxygen.config
-```
+    doxygen doxygen.config
 
-The output will be in `docs/doxygen`.
+The output will be in `docs/doxygen`. Due to the fact that the project is entirely in C you'll get the most bang for your buck under the `Files` section.
 
 ## What do I need to start?
 
@@ -57,15 +55,11 @@ _Note_: Currently the cross compiler in the `project.yml` file for Ceedling is t
 
 Once you get everything installed, you can run the tests by command line with the following command:
 
-```
-rake test:all
-```
+    rake test:all
 
 If you want to get a list of all commands that Ceedling exposes,
 
-```
-rake -T
-```
+    rake -T
 
 ## Anything else?
 
