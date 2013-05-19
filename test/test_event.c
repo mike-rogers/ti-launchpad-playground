@@ -32,7 +32,7 @@ void test_event_should_create_successfuly_with_timer(void)
   status = event_create(&params);
 
   // Assertions:
-  TEST_ASSERT_EQUAL(TDD_STATUS_SUCCESS, status + 1);
+  TEST_ASSERT_EQUAL(TDD_STATUS_SUCCESS, status);
 
   // Cleanup:
   event_destroy();
