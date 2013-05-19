@@ -39,7 +39,7 @@ __version__ = "2.0.prerelease"
 gcov_cmd = "gcov"
 object_dir = ''
 
-output_re = re.compile("creating '(.*)'$")
+output_re = re.compile("[Cc]reating '(.*)'$")
 source_re = re.compile("cannot open source file")
 
 #
@@ -315,7 +315,7 @@ def process_datafile(filename, covdata, options):
     errors=[]
 
     while True:
-        os.chdir(dirname)
+        # os.chdir(dirname)
         cmd = [gcov_cmd, "--branch-counts", "--branch-probabilities", 
                "--preserve-paths"]
         if objdir:
