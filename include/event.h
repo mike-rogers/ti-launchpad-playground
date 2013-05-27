@@ -17,6 +17,12 @@
 #include "timer.h"
 
 /**
+ * A constant that defines the maximum number of events that
+ * can be registered.
+ */
+#define MAX_NUMBER_OF_EVENTS 10
+
+/**
  * A `typedef` for the function pointers used as callbacks.
  */
 typedef void (*event_cb_t)(void);

@@ -14,9 +14,15 @@
  */
 #define EXPECTED_TACTL_VALUE 0x02c2
 
+// Static function to test ISR implementation
+static void isrTestCallbackFunction(void);
+
+// Static boolean to verify ISR execution
+static tdd_bool_t didCallIsrTestCallback;
+
 void setUp(void)
 {
-  // empty
+  didCallIsrTestCallback = TDD_FALSE;
 }
 
 void tearDown(void)
@@ -145,6 +151,28 @@ void test_timer_should_stop_while_running(void)
   maskedTactlRegister = (tactlRegister & (0x03 << 4)); // MCx bits
   TEST_ASSERT_EQUAL(TDD_STATUS_SUCCESS, status);
   TEST_ASSERT_EQUAL(expectedTactlRegister, maskedTactlRegister);
+
+  // Cleanup:
+  timer_destroy();
+}
+
+void test_timer_should_fail_to_stop_while_stopped(void)
+{
+  uint16_t tactlRegister;
+  tdd_status_t status;
+  timer_params_s params;
+
+  // Preparation:
+  params.tactl_r = &tactlRegister;
+  timer_create(&params);
+  timer_start();
+  timer_stop();
+
+  // Code under test:
+  status = timer_stop();
+
+  // Assertions:
+  TEST_ASSERT_EQUAL(TDD_STATUS_TIMER_NOT_RUNNING, status);
 
   // Cleanup:
   timer_destroy();
@@ -326,4 +354,30 @@ void test_timer_should_report_not_running_if_not_created(void)
 
   // Assertions:
   TEST_ASSERT_EQUAL(TDD_FALSE, result);
+}
+
+void test_timer_should_call_interrupt_function_on_isr(void)
+{
+  uint16_t tactlRegister;
+  timer_cb_t timerCallback;
+  timer_params_s params;
+
+  // Preparation:
+  params.tactl_r = &tactlRegister;
+  params.interruptFunction = isrTestCallbackFunction;
+  timer_create(&params);
+
+  // Code under test:
+  TIMERA0_ISR();
+
+  // Assertions:
+  TEST_ASSERT_EQUAL(TDD_TRUE, didCallIsrTestCallback);
+
+  // Cleanup:
+  timer_destroy();
+}
+
+static void isrTestCallbackFunction(void)
+{
+  didCallIsrTestCallback = TDD_TRUE;
 }

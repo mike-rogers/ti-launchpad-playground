@@ -59,6 +59,31 @@ void test_event_should_register_callback(void)
   event_destroy();
 }
 
+void test_event_should_be_unable_to_register_more_than_max_events(void)
+{
+  tdd_status_t status;
+  timer_params_s params;
+  uint32_t numberOfInterrupts = 5;
+  event_cb_t callbackFunction = 0;
+  int i;
+
+  // Preparation:
+  timer_create_IgnoreAndReturn(TDD_STATUS_SUCCESS);
+  event_create(&params);
+  for (i = 0; i < MAX_NUMBER_OF_EVENTS; i++) {
+    event_registerCallback(callbackFunction, numberOfInterrupts);
+  }
+
+  // Code under test:
+  status = event_registerCallback(callbackFunction, numberOfInterrupts);
+
+  // Assertions:
+  TEST_ASSERT_EQUAL(TDD_STATUS_EVENT_CANNOT_REGISTER, status);
+
+  // Cleanup:
+  event_destroy();
+}
+
 void test_event_should_call_callback_after_some_number_of_ticks(void)
 {
   timer_params_s params;
