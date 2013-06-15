@@ -14,6 +14,17 @@
 #define TIMER_TACTL_DEFAULT_VALUE 0x0102
 
 /*
+  CCIE (0x0010): Capture/compare interrupt enable
+ */
+#define TIMER_TACCTL_DEFAULT_VALUE 0x0010
+
+/*
+  For now, ACLK is operating at 12KHz and we want a 1-second
+  pulse.
+ */
+#define TIMER_TACCR_DEFAULT_VALUE 12000
+
+/*
   Composing TACTL's STOP and START masks
   Using timer modes:      << 4
     - STOP         : 0x00
@@ -186,8 +197,8 @@ static void timer_saveConfiguration(timer_params_s *params)
 static void timer_activateConfiguration()
 {
   *(g_params.timerControl_r) = TIMER_TACTL_DEFAULT_VALUE;
-  *(g_params.timerCaptureControl_r) = 0x10;
-  *(g_params.timerCaptureCompare_r) = 12000;
+  *(g_params.timerCaptureControl_r) = TIMER_TACCTL_DEFAULT_VALUE;
+  *(g_params.timerCaptureCompare_r) = TIMER_TACCR_DEFAULT_VALUE;
 }
 
 static void timer_internalStart()
