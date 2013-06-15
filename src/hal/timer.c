@@ -4,14 +4,14 @@
 
 /*
   Composing TACTL's default value (16-bit)
-  Using SMCLK for TASSELx: 0x02 << 8
-  Using /8    for IDx    : 0x03 << 6
+  Using ACLK  for TASSELx: 0x01 << 8
+  Using /1    for IDx    : 0x00 << 6
   Using stop  for MCx    : 0x00 << 4
   Using false for TACLR  : 0x00 << 2
   Using true  for TAIE   : 0x01 << 1
-  Result                 : 0x02c2
+  Result                 : 0x0102
 */
-#define TIMER_TACTL_DEFAULT_VALUE 0x02c2
+#define TIMER_TACTL_DEFAULT_VALUE 0x0102
 
 /*
   Composing TACTL's STOP and START masks
@@ -44,7 +44,7 @@ static void timer_internalStop(void);
 
 tdd_status_t timer_create(timer_params_s *params)
 {
-  tdd_status_t status;
+  tdd_status_t status = TDD_STATUS_ERROR_UNKNOWN;
 
   switch (g_currentState) {
 
@@ -65,7 +65,7 @@ tdd_status_t timer_create(timer_params_s *params)
 
 tdd_status_t timer_destroy()
 {
-  tdd_status_t status;
+  tdd_status_t status = TDD_STATUS_ERROR_UNKNOWN;
 
   switch (g_currentState) {
 
@@ -84,7 +84,7 @@ tdd_status_t timer_destroy()
 
 tdd_status_t timer_start()
 {
-  tdd_status_t status;
+  tdd_status_t status = TDD_STATUS_ERROR_UNKNOWN;
 
   switch (g_currentState) {
 
@@ -109,7 +109,7 @@ tdd_status_t timer_start()
 
 tdd_status_t timer_stop()
 {
-  tdd_status_t status;
+  tdd_status_t status = TDD_STATUS_ERROR_UNKNOWN;
 
   switch (g_currentState) {
 
@@ -134,7 +134,7 @@ tdd_status_t timer_stop()
 
 tdd_status_t timer_restart()
 {
-  tdd_status_t status;
+  tdd_status_t status = TDD_STATUS_ERROR_UNKNOWN;
 
   switch (g_currentState) {
 
@@ -185,20 +185,22 @@ static void timer_saveConfiguration(timer_params_s *params)
 
 static void timer_activateConfiguration()
 {
-  *(g_params.tactl_r) = TIMER_TACTL_DEFAULT_VALUE;
+  *(g_params.timerControl_r) = TIMER_TACTL_DEFAULT_VALUE;
+  *(g_params.timerCaptureControl_r) = 0x10;
+  *(g_params.timerCaptureCompare_r) = 12000;
 }
 
 static void timer_internalStart()
 {
-  *(g_params.tactl_r) |= TIMER_TACTL_START_MASK;
+  *(g_params.timerControl_r) |= TIMER_TACTL_START_MASK;
 }
 
 static void timer_internalStop()
 {
-  *(g_params.tactl_r) &= ~TIMER_TACTL_STOP_MASK;
+  *(g_params.timerControl_r) &= ~TIMER_TACTL_STOP_MASK;
 }
 
-void  __attribute__((interrupt (TIMERA0_VECTOR))) TIMERA0_ISR(void) {
+void timer_isr() {
   if (g_params.interruptFunction != NULL) {
     g_params.interruptFunction();
   }

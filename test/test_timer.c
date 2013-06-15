@@ -5,20 +5,35 @@
 
 /*
   Composing TACTL's expected value (16-bit)
-  Using SMCLK for TASSELx: 0x02 << 8
-  Using /1    for IDx    : 0x03 << 6
+  Using ACLK  for TASSELx: 0x01 << 8
+  Using /1    for IDx    : 0x00 << 6
   Using stop  for MCx    : 0x00 << 4
   Using false for TACLR  : 0x00 << 2
   Using true  for TAIE   : 0x01 << 1
-  Result                 : 0x02c2
+  Result                 : 0x0102
  */
-#define EXPECTED_TACTL_VALUE 0x02c2
+#define EXPECTED_TACTL_VALUE 0x0102
+
+/*
+  CCIE (0x0010): Capture/compare interrupt enable
+ */
+#define EXPECTED_TACCTL_VALUE 0x0010
+
+/*
+  For now, ACLK is operating at 12KHz and we want a 1-second
+  pulse.
+ */
+#define EXPECTED_TACCR_VALUE 12000
 
 // Static function to test ISR implementation
 static void isrTestCallbackFunction(void);
+// Static function to initialize parameter struct
+static void timerInitialize(void);
 
 // Static boolean to verify ISR execution
 static tdd_bool_t didCallIsrTestCallback;
+// Static 'registers' for capturing configuration values
+static uint16_t g_tactlRegister, g_tacctlRegister, g_taccrRegister;
 
 void setUp(void)
 {
@@ -32,19 +47,23 @@ void tearDown(void)
 
 void test_timer_should_create_successfully(void)
 {
-  uint16_t tactlRegister;
+  uint16_t tactlRegister, tacctlRegister, taccrRegister;
   tdd_status_t status;
   timer_cb_t timerCallback;
   timer_params_s params;
 
   // Code under test:
-  params.tactl_r = &tactlRegister;
+  params.timerControl_r = &tactlRegister;
+  params.timerCaptureControl_r = &tacctlRegister;
+  params.timerCaptureCompare_r = &taccrRegister;
   params.interruptFunction = timerCallback;
   status = timer_create(&params);
 
   // Assertions:
   TEST_ASSERT_EQUAL(TDD_STATUS_SUCCESS, status);
   TEST_ASSERT_EQUAL(EXPECTED_TACTL_VALUE, tactlRegister);
+  TEST_ASSERT_EQUAL(EXPECTED_TACCTL_VALUE, tacctlRegister);
+  TEST_ASSERT_EQUAL(EXPECTED_TACCR_VALUE, taccrRegister);
 
   // Cleanup:
   timer_destroy();
@@ -52,13 +71,10 @@ void test_timer_should_create_successfully(void)
 
 void test_timer_should_destroy_successfully(void)
 {
-  uint16_t tactlRegister;
   tdd_status_t status;
-  timer_params_s params;
 
   // Preparation:
-  params.tactl_r = &tactlRegister;
-  timer_create(&params);
+  timerInitialize();
 
   // Code under test:
   status = timer_destroy();
@@ -69,13 +85,11 @@ void test_timer_should_destroy_successfully(void)
 
 void test_timer_should_fail_to_create_twice(void)
 {
-  uint16_t tactlRegister;
-  tdd_status_t status;
   timer_params_s params;
+  tdd_status_t status;
 
   // Preparation:
-  params.tactl_r = &tactlRegister;
-  timer_create(&params);
+  timerInitialize();
 
   // Code under test:
   status = timer_create(&params);
@@ -111,20 +125,18 @@ void test_timer_should_fail_to_start_if_not_created(void)
 
 void test_timer_should_start_successfully_once_configured(void)
 {
-  uint16_t tactlRegister, unexpectedTactlRegister, maskedTactlRegister;
+  uint16_t unexpectedTactlRegister, maskedTactlRegister;
   tdd_status_t status;
-  timer_params_s params;
 
   // Preparation:
-  params.tactl_r = &tactlRegister;
-  timer_create(&params);
+  timerInitialize();
 
   // Code under test:
   status = timer_start();
 
   // Assertions:
   unexpectedTactlRegister = 0; // 0x00 = Stop Mode
-  maskedTactlRegister = (tactlRegister & (0x03 << 4)); // MCx bits
+  maskedTactlRegister = (g_tactlRegister & (0x03 << 4)); // MCx bits
   TEST_ASSERT_EQUAL(TDD_STATUS_SUCCESS, status);
   TEST_ASSERT_NOT_EQUAL(unexpectedTactlRegister, maskedTactlRegister);
 
@@ -134,13 +146,11 @@ void test_timer_should_start_successfully_once_configured(void)
 
 void test_timer_should_stop_while_running(void)
 {
-  uint16_t tactlRegister, expectedTactlRegister, maskedTactlRegister;
+  uint16_t expectedTactlRegister, maskedTactlRegister;
   tdd_status_t status;
-  timer_params_s params;
 
   // Preparation:
-  params.tactl_r = &tactlRegister;
-  timer_create(&params);
+  timerInitialize();
   timer_start();
 
   // Code under test:
@@ -148,7 +158,7 @@ void test_timer_should_stop_while_running(void)
 
   // Assertions:
   expectedTactlRegister = 0; // 0x00 = Stop Mode
-  maskedTactlRegister = (tactlRegister & (0x03 << 4)); // MCx bits
+  maskedTactlRegister = (g_tactlRegister & (0x03 << 4)); // MCx bits
   TEST_ASSERT_EQUAL(TDD_STATUS_SUCCESS, status);
   TEST_ASSERT_EQUAL(expectedTactlRegister, maskedTactlRegister);
 
@@ -158,13 +168,10 @@ void test_timer_should_stop_while_running(void)
 
 void test_timer_should_fail_to_stop_while_stopped(void)
 {
-  uint16_t tactlRegister;
   tdd_status_t status;
-  timer_params_s params;
 
   // Preparation:
-  params.tactl_r = &tactlRegister;
-  timer_create(&params);
+  timerInitialize();
   timer_start();
   timer_stop();
 
@@ -180,13 +187,10 @@ void test_timer_should_fail_to_stop_while_stopped(void)
 
 void test_timer_should_fail_to_start_while_running(void)
 {
-  uint16_t tactlRegister;
   tdd_status_t status;
-  timer_params_s params;
 
   // Preparation:
-  params.tactl_r = &tactlRegister;
-  timer_create(&params);
+  timerInitialize();
   timer_start();
 
   // Code under test:
@@ -201,13 +205,10 @@ void test_timer_should_fail_to_start_while_running(void)
 
 void test_timer_should_fail_to_stop_while_not_running(void)
 {
-  uint16_t tactlRegister;
   tdd_status_t status;
-  timer_params_s params;
 
   // Preparation:
-  params.tactl_r = &tactlRegister;
-  timer_create(&params);
+  timerInitialize();
 
   // Code under test:
   status = timer_stop();
@@ -232,13 +233,11 @@ void test_timer_should_fail_to_stop_while_not_created(void)
 
 void test_timer_should_restart_after_stopping(void)
 {
-  uint16_t tactlRegister, unexpectedTactlRegister, maskedTactlRegister;
+  uint16_t unexpectedTactlRegister, maskedTactlRegister;
   tdd_status_t status;
-  timer_params_s params;
 
   // Preparation:
-  params.tactl_r = &tactlRegister;
-  timer_create(&params);
+  timerInitialize();
   timer_start();
   timer_stop();
 
@@ -247,7 +246,7 @@ void test_timer_should_restart_after_stopping(void)
 
   // Assertions:
   unexpectedTactlRegister = 0; // 0x00 = Stop Mode
-  maskedTactlRegister = (tactlRegister & (0x03 << 4)); // MCx bits
+  maskedTactlRegister = (g_tactlRegister & (0x03 << 4)); // MCx bits
   TEST_ASSERT_EQUAL(TDD_STATUS_SUCCESS, status);
   TEST_ASSERT_NOT_EQUAL(unexpectedTactlRegister, maskedTactlRegister);
 
@@ -257,13 +256,10 @@ void test_timer_should_restart_after_stopping(void)
 
 void test_timer_should_fail_to_restart_while_running(void)
 {
-  uint16_t tactlRegister;
   tdd_status_t status;
-  timer_params_s params;
 
   // Preparation:
-  params.tactl_r = &tactlRegister;
-  timer_create(&params);
+  timerInitialize();
   timer_start();
 
   // Code under test:
@@ -278,13 +274,10 @@ void test_timer_should_fail_to_restart_while_running(void)
 
 void test_timer_should_fail_to_restart_before_starting(void)
 {
-  uint16_t tactlRegister;
   tdd_status_t status;
-  timer_params_s params;
 
   // Preparation:
-  params.tactl_r = &tactlRegister;
-  timer_create(&params);
+  timerInitialize();
 
   // Code under test:
   status = timer_restart();
@@ -309,13 +302,10 @@ void test_timer_should_fail_to_restart_while_not_created(void)
 
 void test_timer_should_know_whether_currently_running(void)
 {
-  uint16_t tactlRegister;
   tdd_bool_t result;
-  timer_params_s params;
 
   // Preparation:
-  params.tactl_r = &tactlRegister;
-  timer_create(&params);
+  timerInitialize();
 
   // Code under test:
   result = timer_isRunning();
@@ -358,17 +348,11 @@ void test_timer_should_report_not_running_if_not_created(void)
 
 void test_timer_should_call_interrupt_function_on_isr(void)
 {
-  uint16_t tactlRegister;
-  timer_cb_t timerCallback;
-  timer_params_s params;
-
   // Preparation:
-  params.tactl_r = &tactlRegister;
-  params.interruptFunction = isrTestCallbackFunction;
-  timer_create(&params);
+  timerInitialize();
 
   // Code under test:
-  TIMERA0_ISR();
+  timer_isr();
 
   // Assertions:
   TEST_ASSERT_EQUAL(TDD_TRUE, didCallIsrTestCallback);
@@ -380,4 +364,19 @@ void test_timer_should_call_interrupt_function_on_isr(void)
 static void isrTestCallbackFunction(void)
 {
   didCallIsrTestCallback = TDD_TRUE;
+}
+
+static void timerInitialize(void)
+{
+  tdd_status_t status;
+  timer_params_s params;
+
+  params.timerControl_r = &g_tactlRegister;
+  params.timerCaptureControl_r = &g_tacctlRegister;
+  params.timerCaptureCompare_r = &g_taccrRegister;
+  params.interruptFunction = isrTestCallbackFunction;
+
+  status = timer_create(&params);
+
+  TEST_ASSERT_EQUAL(TDD_STATUS_SUCCESS, status);
 }

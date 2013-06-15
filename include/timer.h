@@ -29,7 +29,9 @@ typedef void (*timer_cb_t)(void);
  * instance.
  */
 typedef struct {
-  uint16_t *tactl_r; /**< A pointer to the TACTL register */
+  uint16_t *timerControl_r; /**< A pointer to the TACTL register */
+  uint16_t *timerCaptureControl_r; /**< A pointer to the TACTL register */
+  uint16_t *timerCaptureCompare_r; /**< A pointer to the TACTL register */
   timer_cb_t interruptFunction; /**< The function to be executed on interrupt */
 } timer_params_s;
 
@@ -76,5 +78,10 @@ tdd_status_t timer_restart(void);
  * @returns A tdd_bool_t representing whether the timer is running.
  */
 tdd_bool_t timer_isRunning(void);
+
+/**
+ * ISR function to be called on timer interrupt.
+ */
+void timer_isr(void);
 
 #endif // timer_H
