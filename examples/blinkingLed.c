@@ -13,9 +13,9 @@ int main(void)
 {
   timer_params_s timerParams;
 
-  timerParams.timerControl_r = (uint16_t *) TA0CTL_;
-  timerParams.timerCaptureControl_r = (uint16_t *) TA0CCTL0_;
-  timerParams.timerCaptureCompare_r = (uint16_t * ) TA0CCR0_;
+  timerParams.timerControl_r = (uint16_t *) TACTL_;
+  timerParams.timerCaptureControl_r = (uint16_t *) TACCTL0_;
+  timerParams.timerCaptureCompare_r = (uint16_t * ) TACCR0_;
   timerParams.interruptFunction = timerInterruptFunction;
 
   watchdog_createAndDisable((uint16_t *) WDTCTL_);
@@ -40,7 +40,7 @@ static void timerInterruptFunction(void)
   P1OUT ^= (BIT0 + BIT6);
 }
 
-__attribute__((interrupt(TIMER0_A0_VECTOR)))
+__attribute__((interrupt(TIMERA0_VECTOR)))
 void Timer_A(void) {
   timer_isr();
 }
