@@ -1,0 +1,2 @@
+language: c
+script: rake test:all
