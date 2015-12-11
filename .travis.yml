@@ -1,2 +1,10 @@
 language: c
 script: rake test:all
+sudo: false
+addons:
+  apt:
+    packages:
+    - binutils-msp430
+    - gcc-msp430
+    - msp430-libc
+    - mspdebug
