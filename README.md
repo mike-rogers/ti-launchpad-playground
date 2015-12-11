@@ -1,5 +1,7 @@
 # Mike's TI LaunchPad PlayGround
 
+[![Build Status](https://travis-ci.org/mike-rogers/ti-launchpad-playground.svg?branch=master)](https://travis-ci.org/mike-rogers/ti-launchpad-playground)
+
 Have you heard about [TI](http://www.ti.com/)'s MSP430-based [LaunchPad](http://www.ti.com/launchpad)?
 
 You can buy them from (prices and availability may change depending on time and shipping address):
