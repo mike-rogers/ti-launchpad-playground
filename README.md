@@ -27,14 +27,6 @@ Currently none. I will update this area as support is added for a peripheral.
 
 I'm attempting to write this code in a TDD fashion. If you're unfamiliar with embedded TDD (or are otherwise curious about it), I cannot recommend [Test Driven Development for Embedded C](http://pragprog.com/book/jgade/test-driven-development-for-embedded-c) by James W. Grenning highly enough. Some of the tools he used in that book have evolved slightly, but the theory is very sound.
 
-The tool I'm getting the most use out of is [Ceedling](http://throwtheswitch.org/white-papers/ceedling-intro.html), which is a Rake-based build/test/generating system for embedded C projects. Under the hood, Ceedling makes use of:
-
-* [Unity](http://throwtheswitch.org/white-papers/unity-intro.html), a unit testing framework in C
-* [CMock](http://throwtheswitch.org/white-papers/cmock-intro.html), a mocking framework in C
-* [CException](http://throwtheswitch.org/white-papers/cexception-intro.html), a framework for simple exception handling in C
-
-[Ceedling](https://github.com/ThrowTheSwitch/Ceedling) ties all of these frameworks together in a neat, beautiful package.
-
 Additionally the comments are done in the style of [Doxygen](http://www.stack.nl/~dimitri/doxygen/), so if you have it installed you can invoke it with:
 
     doxygen doxygen.config
@@ -45,23 +37,15 @@ The output will be in `docs/doxygen`. Due to the fact that the project is entire
 
 You will need:
 
-* Ruby (I'm using version 1.9.2)
-* Ceedling (follow the instructions from the links above)
 * GCC (all tests are compiled with your host architecture)
 * MSP430 environment for your OS
  * [osx-launchpad](http://code.google.com/p/osx-launchpad/) for Mac
  * [MSPGCC](http://sourceforge.net/apps/mediawiki/mspgcc/index.php?title=MSPGCC_Wiki) and [MSPDebug](http://mspdebug.sourceforge.net/) for Linux
  * [Code Composer Studio 5.3](http://processors.wiki.ti.com/index.php/Download_CCS) for Windows
 
-_Note_: Currently the cross compiler in the `project.yml` file for Ceedling is tied to `osx-launchpad` - feel free to modify for your own cross compiler.
-
 Once you get everything installed, you can run the tests by command line with the following command:
 
-    rake test:all
-
-If you want to get a list of all commands that Ceedling exposes,
-
-    rake -T
+    mkdir build && cd build && cmake .. && make && ./test/basic/runBasicTests
 
 ## Anything else?
 

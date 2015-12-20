@@ -134,7 +134,7 @@ TEST_F(TestTimerFixture, should_start_successfully_once_configured)
 
     // Assertions:
     unexpectedTactlRegister = 0; // 0x00 = Stop Mode
-    maskedTactlRegister = (g_tactlRegister & (0x03 << 4)); // MCx bits
+    maskedTactlRegister = (uint16_t) (g_tactlRegister & (0x03 << 4)); // MCx bits
     ASSERT_EQ(TDD_STATUS_SUCCESS, status);
     ASSERT_NE(unexpectedTactlRegister, maskedTactlRegister);
 
@@ -156,7 +156,7 @@ TEST_F(TestTimerFixture, should_stop_while_running)
 
     // Assertions:
     expectedTactlRegister = 0; // 0x00 = Stop Mode
-    maskedTactlRegister = (g_tactlRegister & (0x03 << 4)); // MCx bits
+    maskedTactlRegister = (uint16_t) (g_tactlRegister & (0x03 << 4)); // MCx bits
     ASSERT_EQ(TDD_STATUS_SUCCESS, status);
     ASSERT_EQ(expectedTactlRegister, maskedTactlRegister);
 

@@ -55,7 +55,7 @@ static void timer_internalStop(void);
 
 tdd_status_t tdd_timer_create(timer_params_s *params)
 {
-  tdd_status_t status = TDD_STATUS_ERROR_UNKNOWN;
+  tdd_status_t status;
 
   switch (g_currentState) {
 
@@ -76,7 +76,7 @@ tdd_status_t tdd_timer_create(timer_params_s *params)
 
 tdd_status_t timer_destroy()
 {
-  tdd_status_t status = TDD_STATUS_ERROR_UNKNOWN;
+  tdd_status_t status;
 
   switch (g_currentState) {
 
