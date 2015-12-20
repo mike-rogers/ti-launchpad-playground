@@ -1,6 +1,10 @@
 #ifndef timer_H
 #define timer_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @file timer.h
  * @brief A module to cover TI's TIMERA functionality.
@@ -29,10 +33,13 @@ typedef void (*timer_cb_t)(void);
  * instance.
  */
 typedef struct {
-  uint16_t *timerControl_r; /**< A pointer to the TACTL register */
-  uint16_t *timerCaptureControl_r; /**< A pointer to the TACTL register */
-  uint16_t *timerCaptureCompare_r; /**< A pointer to the TACTL register */
-  timer_cb_t interruptFunction; /**< The function to be executed on interrupt */
+    uint16_t *timerControl_r;
+    /**< A pointer to the TACTL register */
+    uint16_t *timerCaptureControl_r;
+    /**< A pointer to the TACTL register */
+    uint16_t *timerCaptureCompare_r;
+    /**< A pointer to the TACTL register */
+    timer_cb_t interruptFunction; /**< The function to be executed on interrupt */
 } timer_params_s;
 
 /**
@@ -42,7 +49,7 @@ typedef struct {
  * @param[in] params A struct containing configuration parameters for a TIMERA.
  * @returns A status indicating success or type of failure.
  */
-tdd_status_t timer_create(timer_params_s *params);
+tdd_status_t tdd_timer_create(timer_params_s *params);
 
 /**
  * Returns the `event` singleton to an unconfigured state.
@@ -83,5 +90,9 @@ tdd_bool_t timer_isRunning(void);
  * ISR function to be called on timer interrupt.
  */
 void timer_isr(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // timer_H

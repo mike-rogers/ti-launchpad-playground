@@ -53,7 +53,7 @@ static void timer_activateConfiguration(void);
 static void timer_internalStart(void);
 static void timer_internalStop(void);
 
-tdd_status_t timer_create(timer_params_s *params)
+tdd_status_t tdd_timer_create(timer_params_s *params)
 {
   tdd_status_t status = TDD_STATUS_ERROR_UNKNOWN;
 

@@ -1,5 +1,5 @@
 language: c
-script: rake test:all
+script: mkdir build && cd build && cmake .. && make && ./test/basic/runBasicTests
 sudo: false
 addons:
   apt:
@@ -8,3 +8,4 @@ addons:
     - gcc-msp430
     - msp430-libc
     - mspdebug
+    - cmake

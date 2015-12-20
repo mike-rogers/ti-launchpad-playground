@@ -25,12 +25,12 @@
 :paths:
   :test:
     - +:test/**
-    - -:test/support
+    - -:test/basic
   :source:
     - include/**
     - src/**
   :support:
-    - test/support
+    - test/basic
 
 :defines:
   # in order to add common defines:

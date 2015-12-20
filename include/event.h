@@ -1,6 +1,10 @@
 #ifndef event_H
 #define event_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @file event.h
  * @brief An eventing module based off TIMERA
@@ -57,5 +61,9 @@ tdd_status_t event_registerCallback(event_cb_t callback, uint32_t numberOfInterr
  * should be called whenever the associated TIMERA interrupts.
  */
 void event_tick(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // event_H

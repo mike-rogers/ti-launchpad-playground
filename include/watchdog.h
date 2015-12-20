@@ -1,6 +1,10 @@
 #ifndef watchdog_H
 #define watchdog_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @file watchdog.h
  * @brief A module for watchdog configuration.
@@ -20,3 +24,7 @@
 tdd_status_t watchdog_createAndDisable(uint16_t *reg);
 
 #endif // watchdog_H
+
+#ifdef __cplusplus
+}
+#endif
